@@ -23,9 +23,9 @@ function RenderItem(props) {
     return <Loading />;
   } else if (props.errMess) {
     return (
-      <view>
+      <View>
         <Text> {props.errMess} </Text>
-      </view>
+      </View>
     );
   } else if (item != null) {
     return (

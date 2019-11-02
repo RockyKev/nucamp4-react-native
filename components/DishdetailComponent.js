@@ -25,7 +25,7 @@ function RenderDish(props) {
   if (dish != null) {
     return (
       <Card featuredTitle={dish.name} image={{ uri: baseUrl + dish.image }}>
-        ><Text style={{ margin: 10 }}>{dish.description}</Text>
+        <Text style={{ margin: 10 }}>{dish.description}</Text>
         <Icon
           raised
           reverse
@@ -52,7 +52,7 @@ function RenderComments(props) {
         <Text style={{ fontSize: 14 }}>{item.comment}</Text>
         <Text style={{ fontSize: 12 }}>{item.rating} Stars</Text>
         <Text style={{ fontSize: 12 }}>
-          {"-- " + item.author + ", " + item.date}{" "}
+          {"-- " + item.author + ", " + item.date}
         </Text>
       </View>
     );
