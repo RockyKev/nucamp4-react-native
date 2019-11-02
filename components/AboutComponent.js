@@ -43,7 +43,7 @@ class About extends Component {
           subtitle={item.description}
           leftAvatar={{ source: { uri: baseUrl + item.image } }}
           //   leftAvatar={item.image}
-          data={this.state.leaders}
+          data={this.props.leaders}
         />
       );
     };
