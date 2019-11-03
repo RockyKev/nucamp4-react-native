@@ -15,7 +15,9 @@ import { Card, Icon } from "react-native-elements";
 import { connect } from "react-redux";
 import { baseUrl } from "../shared/baseURL";
 
-import { postFavorite } from "../redux/ActionCreators";
+import { postFavorite, postComment } from "../redux/ActionCreators";
+
+import { Rating, Input } from "react-native-elements";
 
 const mapStateToProps = state => {
   return {
@@ -26,7 +28,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  postFavorite: dishId => dispatch(postFavorite(dishId))
+  postFavorite: dishId => dispatch(postFavorite(dishId)),
+  postComment: (dishId, rating, author, comment) =>
+    dispatch(postComment(dishId, rating, author, comment))
 });
 
 function RenderDish(props) {
@@ -36,34 +40,26 @@ function RenderDish(props) {
     return (
       <Card featuredTitle={dish.name} image={{ uri: baseUrl + dish.image }}>
         <Text style={{ margin: 10 }}> {dish.description}</Text>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "space-around"
-          }}
-        >
-          <View style={{ flexDirection: "row" }}>
-            <Icon
-              raised
-              reverse
-              name={props.favorite ? "heart" : "heart-o"}
-              type="font-awesome"
-              color="#f50"
-              onPress={() =>
-                props.favorite
-                  ? console.log("Already favorite")
-                  : props.onPress()
-              }
-            />
-            <Icon
-              raised
-              reverse
-              name="pencil"
-              type="font-awesome"
-              color="#f50"
-              onPress={() => props.onShowModal()}
-            />
-          </View>
+        <View style={styles.cardRow}>
+          <Icon
+            raised
+            reverse
+            name={props.favorite ? "heart" : "heart-o"}
+            type="font-awesome"
+            color="#f50"
+            onPress={() =>
+              props.favorite ? console.log("Already favorite") : props.onPress()
+            }
+          />
+          <Icon
+            style={styles.cardItem}
+            raised
+            reverse
+            name="pencil"
+            type="font-awesome"
+            color="#512DA8"
+            onPress={() => props.onShowModal()}
+          />
         </View>
       </Card>
     );
@@ -79,7 +75,13 @@ function RenderComments(props) {
     return (
       <View key={index} style={{ margin: 10 }}>
         <Text style={{ fontSize: 14 }}>{item.comment}</Text>
-        <Text style={{ fontSize: 12 }}>{item.rating} Stars</Text>
+        <Rating
+          imageSize={20}
+          readonly
+          startingValue={item.rating}
+          style={styles.rating}
+        />
+        {/* <Rating type="star" startingValue={item.rating} ratingCount={5} /> */}
         <Text style={{ fontSize: 12 }}>
           {"-- " + item.author + ", " + item.date}
         </Text>
@@ -102,20 +104,63 @@ class DishDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false
+      showModal: false,
+      rating: 5,
+      author: "",
+      comment: "",
+      commentId: 0
     };
   }
 
-  // toggleModal() {
-  //   this.setState({ showModal: !this.state.showModal });
-  // }
+  componentDidMount() {
+    // console.log("get object length!");
+    // console.log(Object.keys(this.props.comments.comments).length);
+    this.setState({
+      commentId: Object.keys(this.props.comments.comments).length
+    });
+  }
+
+  toggleModal() {
+    // this.setState = { showModal: !this.state.showModal };
+    this.setState({ showModal: !this.state.showModal });
+  }
 
   markFavorite(dishId) {
     this.props.postFavorite(dishId);
   }
+
   static navigationOptions = {
     title: "Dish Details"
   };
+
+  handleComment(dishId) {
+    let newId = this.state.commentId;
+    this.props.postComment(
+      dishId,
+      this.state.rating,
+      this.state.author,
+      this.state.comment
+    );
+    // this.props.postComment(0, 4, "rk", "comment");
+    console.log("reached stringify state");
+    console.log(JSON.stringify(this.state));
+    console.log(
+      dishId,
+      this.state.rating,
+      this.state.author,
+      this.state.comment,
+      this.state.commentId
+    );
+  }
+
+  resetForm() {
+    this.setState = {
+      showModal: false,
+      rating: 5,
+      author: "",
+      comment: ""
+    };
+  }
 
   render() {
     const dishId = this.props.navigation.getParam("dishId", "");
@@ -125,7 +170,7 @@ class DishDetail extends Component {
           dish={this.props.dishes.dishes[+dishId]}
           favorite={this.props.favorites.some(el => el === dishId)}
           onPress={() => this.markFavorite(dishId)}
-          // onShowModal={() => this.toggleModal}
+          onShowModal={() => this.toggleModal()}
         />
 
         <RenderComments
@@ -141,24 +186,52 @@ class DishDetail extends Component {
           onRequestClose={() => this.toggleModal()}
         >
           <View style={styles.modal}>
-            <Text style={styles.modalTitle}>Your Reservation</Text>
-            <Text style={styles.modalText}>
-              Number of Guests: {this.state.guests}
-            </Text>
-            <Text style={styles.modalText}>
-              Smoking?: {this.state.smoking ? "Yes" : "No"}
-            </Text>
-            <Text style={styles.modalText}>
-              Date and Time: {this.state.date}
-            </Text>
+            <Rating
+              type="star"
+              startingValue={this.state.rating}
+              ratingCount={5}
+              imageSize={60}
+              showRating
+              onFinishRating={rating => this.setState({ rating: rating })}
+            />
 
+            <Input
+              placeholder="Author"
+              leftIcon={{
+                name: "user",
+                type: "font-awesome",
+                size: 24
+              }}
+              onChangeText={text => this.setState({ author: text })}
+            />
+
+            <Input
+              placeholder="Comment"
+              leftIcon={{
+                name: "comment",
+                type: "font-awesome",
+                size: 24
+              }}
+              onChangeText={text => this.setState({ comment: text })}
+            />
+
+            <Button
+              onPress={() => {
+                this.toggleModal();
+                this.handleComment(dishId);
+                this.resetForm();
+              }}
+              style={styles.cardItem}
+              color="#512DA8"
+              title="Submit"
+            />
             <Button
               onPress={() => {
                 this.toggleModal();
                 this.resetForm();
               }}
-              color="#512DA8"
-              title="Close"
+              color="grey"
+              title="Cancel"
             />
           </View>
         </Modal>
@@ -168,35 +241,28 @@ class DishDetail extends Component {
 }
 
 const styles = StyleSheet.create({
-  formRow: {
+  cardRow: {
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
     flexDirection: "row",
     margin: 20
   },
-  formLabel: {
-    fontSize: 18,
-    flex: 2
-  },
-  formItem: {
-    flex: 1
+  cardItem: {
+    flex: 1,
+    margin: 10
   },
   modal: {
     justifyContent: "center",
     margin: 20
   },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    backgroundColor: "#512DA8",
-    textAlign: "center",
-    color: "white",
-    marginBottom: 20
-  },
   modalText: {
     fontSize: 18,
     margin: 10
+  },
+  rating: {
+    justifyContent: "flex-start",
+    alignItems: "flex-start"
   }
 });
 

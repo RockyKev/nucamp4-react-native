@@ -23,10 +23,6 @@ class Reservation extends Component {
     };
   }
 
-  toggleModal() {
-    this.setState({ showModal: !this.state.showModal });
-  }
-
   static navigationOptions = {
     title: "Reserve Table"
   };
