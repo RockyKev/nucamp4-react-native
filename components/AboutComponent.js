@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import { ScrollView, Text, FlatList } from "react-native";
 import { Card, ListItem } from "react-native-elements";
-
 import { connect } from "react-redux";
 import { baseUrl } from "../shared/baseURL";
-
 import { Loading } from "./LoadingComponent";
+import * as Animatable from "react-native-animatable";
 
 const mapStateToProps = state => {
   return {
@@ -60,24 +59,28 @@ class About extends Component {
     } else if (this.props.leaders.errMessage) {
       return (
         <ScrollView>
-          <History />
-          <Card title="Corporate Leadership">
-            <Text>{this.props.leaders.errMessage}</Text>
-          </Card>
+          <Animatable.View animation="fadeInDown" duration={2000} delay={1000}>
+            <History />
+            <Card title="Corporate Leadership">
+              <Text>{this.props.leaders.errMessage}</Text>
+            </Card>
+          </Animatable.View>
         </ScrollView>
       );
     } else {
       return (
         <ScrollView>
-          <History />
+          <Animatable.View animation="fadeInDown" duration={2000} delay={1000}>
+            <History />
 
-          <Card>
-            <FlatList
-              data={this.props.leaders.leaders}
-              renderItem={renderLeader}
-              keyExtractor={item => item.id.toString()}
-            />
-          </Card>
+            <Card>
+              <FlatList
+                data={this.props.leaders.leaders}
+                renderItem={renderLeader}
+                keyExtractor={item => item.id.toString()}
+              />
+            </Card>
+          </Animatable.View>
         </ScrollView>
       );
     }

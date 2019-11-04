@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { ScrollView, Text } from "react-native";
 import { Card } from "react-native-elements";
+import * as Animatable from "react-native-animatable";
 
 class Contact extends Component {
   static navigationOptions = {
@@ -10,9 +11,10 @@ class Contact extends Component {
   render() {
     return (
       <ScrollView>
-        <Card title="Contact Information">
-          <Text>
-            {`
+        <Animatable.View animation="fadeInDown" duration={2000} delay={1000}>
+          <Card title="Contact Information">
+            <Text>
+              {`
 121, Clear Water Bay 
 
 Road Clear Water Bay, 
@@ -25,8 +27,9 @@ Fax: +852 8765 4321
 
 Email:confusion@food.net            
             `}
-          </Text>
-        </Card>
+            </Text>
+          </Card>
+        </Animatable.View>
       </ScrollView>
     );
   }
