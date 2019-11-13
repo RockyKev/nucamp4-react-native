@@ -8,7 +8,8 @@ import {
   Modal,
   FlatList,
   Alert,
-  PanResponder
+  PanResponder,
+  Share
 } from "react-native";
 import { Card, Icon } from "react-native-elements";
 
@@ -100,6 +101,19 @@ function RenderDish(props) {
     }
   });
 
+  const shareDish = (title, message, url) => {
+    Share.share(
+      {
+        title: title,
+        message: title + ": " + message + " " + url,
+        url: url
+      },
+      {
+        dialogTitle: "Share" + title
+      }
+    );
+  };
+
   if (dish != null) {
     return (
       <Animatable.View
@@ -109,7 +123,8 @@ function RenderDish(props) {
         ref={this.handleViewRef}
         {...panResponder.panHandlers}
       >
-        <Card featuredTitle={dish.name} image={{ uri: baseUrl + dish.image }}>
+        {/* <Card featuredTitle={dish.name} image={{ uri: baseUrl + dish.image }}> */}
+        <Card featuredTitle={dish.name} image={{ uri: dish.image }}>
           <Text style={{ margin: 10 }}> {dish.description}</Text>
           <View style={styles.cardRow}>
             <Icon
@@ -132,6 +147,17 @@ function RenderDish(props) {
               type="font-awesome"
               color="#512DA8"
               onPress={() => props.onShowModal()}
+            />
+            <Icon
+              raised
+              reverse
+              name="share"
+              type="font-awesome"
+              color="#5182A8"
+              style={styles.cardItem}
+              onPress={() =>
+                shareDish(dish.name, dish.description, baseUrl + dish.image)
+              }
             />
           </View>
         </Card>
@@ -342,7 +368,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DishDetail);
+export default connect(mapStateToProps, mapDispatchToProps)(DishDetail);
