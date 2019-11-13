@@ -47,6 +47,14 @@ function RenderDish(props) {
     // else return false;
   };
 
+  const recognizeComment = ({ moveX, moveY, dx, dy }) => {
+    return dx > 200 ? true : false;
+
+    // if (dx < -200) return true;
+    // else return false;
+  };
+
+  //This is for gesture animation
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: (e, gestureState) => {
       return true;
@@ -60,7 +68,8 @@ function RenderDish(props) {
     },
     onPanResponderEnd: (e, gestureState) => {
       console.log("pan responder end", gestureState);
-      if (recognizeDrag(gestureState))
+      if (recognizeDrag(gestureState)) {
+        console.log("show add to favorite alert");
         Alert.alert(
           "Add to Favorites",
           "Are you sure you wish to add " + dish.name + " to your favorites?",
@@ -80,6 +89,12 @@ function RenderDish(props) {
           ],
           { cancelable: false }
         );
+      }
+
+      if (recognizeComment(gestureState)) {
+        console.log("show comment box from drag");
+        props.onShowModal();
+      }
 
       return true;
     }
