@@ -4,6 +4,8 @@ import { Icon, Input, CheckBox, Button } from "react-native-elements";
 import * as SecureStore from "expo-secure-store";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
+import * as ImageManipulator from "expo-image-manipulator";
+
 import { createBottomTabNavigator } from "react-navigation";
 import { baseUrl } from "../shared/baseURL";
 
@@ -60,63 +62,65 @@ class LoginTab extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Input
-          placeholder="User Name"
-          leftIcon={{ type: "font-awesome", name: "user-o" }}
-          onChangeText={username => this.setState({ username })}
-          value={this.state.username}
-          containerStyle={styles.formInput}
-        />
-        <Input
-          placeholder="Password"
-          leftIcon={{ type: "font-awesome", name: "key" }}
-          onChangeText={password => this.setState({ password })}
-          value={this.state.password}
-          containerStyle={styles.formInput}
-        />
-
-        <CheckBox
-          title="Remember Me?"
-          checked={this.state.remember}
-          center
-          onPress={() => this.setState({ remember: !this.state.remember })}
-          containerStyle={styles.formCheckbox}
-        />
-        <View style={styles.formButton}>
-          <Button
-            onPress={() => this.handleLogin()}
-            title="Login"
-            color="#512DA8"
-            icon={
-              <Icon
-                name="sign-in"
-                type="font-awesome"
-                color="white"
-                size={24}
-              />
-            }
-            buttonStyle={{ backgroundColor: "#512DA8" }}
+      <ScrollView>
+        <View style={styles.container}>
+          <Input
+            placeholder="User Name"
+            leftIcon={{ type: "font-awesome", name: "user-o" }}
+            onChangeText={username => this.setState({ username })}
+            value={this.state.username}
+            containerStyle={styles.formInput}
           />
-        </View>
-
-        <View style={styles.formButton}>
-          <Button
-            onPress={() => this.props.navigation.navigate("Register")}
-            title="Register"
-            type="clear"
-            icon={
-              <Icon
-                name="user-plus"
-                type="font-awesome"
-                color="white"
-                size={24}
-              />
-            }
-            titleStyle={{ color: "blue" }}
+          <Input
+            placeholder="Password"
+            leftIcon={{ type: "font-awesome", name: "key" }}
+            onChangeText={password => this.setState({ password })}
+            value={this.state.password}
+            containerStyle={styles.formInput}
           />
+
+          <CheckBox
+            title="Remember Me?"
+            checked={this.state.remember}
+            center
+            onPress={() => this.setState({ remember: !this.state.remember })}
+            containerStyle={styles.formCheckbox}
+          />
+          <View style={styles.formButton}>
+            <Button
+              onPress={() => this.handleLogin()}
+              title="Login"
+              color="#512DA8"
+              icon={
+                <Icon
+                  name="sign-in"
+                  type="font-awesome"
+                  color="white"
+                  size={24}
+                />
+              }
+              buttonStyle={{ backgroundColor: "#512DA8" }}
+            />
+          </View>
+
+          <View style={styles.formButton}>
+            <Button
+              onPress={() => this.props.navigation.navigate("Register")}
+              title="Register"
+              type="clear"
+              icon={
+                <Icon
+                  name="user-plus"
+                  type="font-awesome"
+                  color="white"
+                  size={24}
+                />
+              }
+              titleStyle={{ color: "blue" }}
+            />
+          </View>
         </View>
-      </View>
+      </ScrollView>
     );
   }
 }
@@ -134,6 +138,15 @@ class RegisterTab extends Component {
       imageUrl: baseUrl + "images/logo.png"
     };
   }
+
+  processImage = async imageUri => {
+    let processedImage = await ImageManipulator.manipulateAsync(
+      imageUri,
+      [{ resize: { width: 400 } }],
+      { format: "png" }
+    );
+    this.setState({ imageUrl: processedImage.uri });
+  };
 
   static navigationOptions = {
     title: "Register",
@@ -164,7 +177,8 @@ class RegisterTab extends Component {
 
       if (!capturedImage.cancelled) {
         console.log(capturedImage);
-        this.setState({ imageUrl: capturedImage.uri });
+        // this.setState({ imageUrl: capturedImage.uri });
+        this.processImage(capturedImage.uri);
       }
     }
   };
