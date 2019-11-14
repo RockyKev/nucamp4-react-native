@@ -239,6 +239,7 @@ const LoginNavigator = createStackNavigator(
       headerTitleStyle: {
         color: "#fff"
       },
+      title: "Login",
       headerTintColor: "#fff",
       headerLeft: (
         <Icon
