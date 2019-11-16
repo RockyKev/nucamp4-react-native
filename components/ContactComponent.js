@@ -3,6 +3,7 @@ import { ScrollView, Text } from "react-native";
 import { Card, Button, Icon } from "react-native-elements";
 import * as Animatable from "react-native-animatable";
 import * as MailComposer from "expo-mail-composer";
+import * as ImagePicker from "expo-image-picker";
 
 class Contact extends Component {
   static navigationOptions = {

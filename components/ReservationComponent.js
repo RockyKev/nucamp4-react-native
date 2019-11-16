@@ -16,6 +16,7 @@ import * as Animatable from "react-native-animatable";
 
 import * as Permissions from "expo-permissions";
 import { Notifications } from "expo";
+import * as Calendar from "expo-calendar";
 
 class Reservation extends Component {
   constructor(props) {
@@ -32,6 +33,36 @@ class Reservation extends Component {
   static navigationOptions = {
     title: "Reserve Table"
   };
+
+  obtainCalendarPermissions() {
+    Permissions.CALENDAR;
+  }
+
+  addReservationToCalendar() {
+    return this.handleReservation();
+  }
+
+  async pushToCalendar() {
+    const reservationDate = new Date(Date.parse(this.state.date));
+
+    let theDate = new Date(reservationDate.getTime() + 7200000);
+    // var theDate3 = new Date(theDate2.getTime()  + 100000)
+
+    // This function takes a title, the start and end time, timezone and location as the parameters.
+
+    console.log("we are in the pushToCalendar");
+
+    calendarObject = {
+      title: "Con Fusion Table Reservation",
+      startTime: reservationDate,
+      endTime: theDate,
+      timezone: "Asia/Hong_Kong",
+      location: "121, Clear Water Bay Road, Clear Water Bay, Kowloon, Hong Kong"
+    };
+
+    await Calendar.createEventAsync(Calendar.DEFAULT, calendarObject);
+    console.log(calendarObject);
+  }
 
   handleReservation() {
     console.log(JSON.stringify(this.state));
@@ -53,6 +84,7 @@ Date and Time: ${this.state.date}
           onPress: () => {
             // console.log("Fake submit");
             this.presentLocalNotification(this.state.date);
+            this.pushToCalendar();
             this.resetForm();
           }
         }

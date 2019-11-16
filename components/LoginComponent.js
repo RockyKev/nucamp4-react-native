@@ -5,6 +5,7 @@ import * as SecureStore from "expo-secure-store";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import * as ImageManipulator from "expo-image-manipulator";
+import Constants from "expo-constants";
 
 import { createBottomTabNavigator } from "react-navigation";
 import { baseUrl } from "../shared/baseURL";
@@ -201,6 +202,35 @@ class RegisterTab extends Component {
     }
   }
 
+  componentDidMount() {
+    this.getPermissionAsync();
+    console.log("hi");
+  }
+  getPermissionAsync = async () => {
+    // if (Constants.platform.ios) {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!");
+    }
+    // }
+  };
+
+  _pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      this.setState({ image: result.uri });
+      this.processImage(capturedImage.uri);
+    }
+  };
+
   render() {
     return (
       <ScrollView>
@@ -212,6 +242,7 @@ class RegisterTab extends Component {
               style={styles.image}
             />
             <Button title="Camera" onPress={this.getImageFromCamera} />
+            <Button title="Gallery" onPress={this._pickImage} />
           </View>
 
           <Input
